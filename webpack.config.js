@@ -5,6 +5,7 @@ const CopyWebpackPlugin = require('copy-webpack-plugin')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin')
 const TerserWebpackPlugin = require('terser-webpack-plugin')
+const {BundleAnalyzerPlugin} = require('webpack-bundle-analyzer')
 
 const isDev = process.env.NODE_ENV === 'development' ? true : false;
 
@@ -37,26 +38,38 @@ const cssLoaders = extra => {
 	return loaders
 }
 
-module.exports = {
-	context: path.resolve(__dirname, 'src'),
-	mode: 'development',
-	entry: {
-		main: ['@babel/polyfill','./index.js'],
-		analytics: './analytics.js'
-	},
-	output: {
-		filename: filename('js'),
-		path: path.resolve(__dirname, 'dist'),
-	},
-	resolve: {
-		extensions: ['.js', '.json', '.png'],
-		alias: {
-			'@': path.resolve(__dirname, 'src'),
-			'@models': path.resolve(__dirname, 'src/models'),
-			"@assets": path.resolve(__dirname, 'src/assets'),
+const babelOptions = (preset) => {
+	const opts = {
+		presets: ['@babel/preset-env'],
+		plugins: [
+			'@babel/plugin-proposal-class-properties'
+		]
+	}
+
+	if(preset) {
+		opts.presets.push(preset)
+	}
+
+	return opts
+}
+
+const jsLoaders = () => {
+	const loaders = [
+		{
+			loader: 'babel-loader',
+			options: babelOptions()
 		}
-	},
-	plugins: [
+	]
+
+	if(isDev) {
+		loaders.push('eslint-loader')
+	}
+ 
+	return loaders
+}
+
+const plugins = () => {
+	const base = [
 		new HTMLWebpackPlugin({
 			template: './index.html',
 			minify: {
@@ -73,12 +86,41 @@ module.exports = {
 			filename: filename('css'),
 		})
 
-	],
+	]
+
+	if (!isDev) {
+		base.push(new BundleAnalyzerPlugin())
+	}
+
+	return base
+}
+
+module.exports = {
+	context: path.resolve(__dirname, 'src'),
+	mode: 'development',
+	entry: {
+		main: ['@babel/polyfill','./index.jsx'],
+		analytics: './analytics.ts'
+	},
+	output: {
+		filename: filename('js'),
+		path: path.resolve(__dirname, 'dist'),
+	},
+	resolve: {
+		extensions: ['.js', '.json', '.png'],
+		alias: {
+			'@': path.resolve(__dirname, 'src'),
+			'@models': path.resolve(__dirname, 'src/models'),
+			"@assets": path.resolve(__dirname, 'src/assets'),
+		}
+	},
+	plugins: plugins(),
 	optimization: optimization(),
 	devServer: {
 		port: 4200,
 		hot: isDev
 	},
+	devtool: isDev ? 'source-map' : false,
 	module: {
 		rules: [
 			{
@@ -110,18 +152,26 @@ module.exports = {
 				use: ['csv-loader']
 			},
 			{
-				test: /\.m?js$/,
+				test: /\.m?cjs$/,
+				exclude: /node_modules/,
+				use: jsLoaders()
+			},
+			{
+				test: /\.m?ts$/,
 				exclude: /node_modules/,
 				use: {
 					loader: 'babel-loader',
-					options: {
-						presets: ['@babel/preset-env'],
-						plugins: [
-							'@babel/plugin-proposal-class-properties'
-						]
-					}
+					options: babelOptions('@babel/preset-typescript') 	
 				}
-			}
+			},
+			{
+				test: /\.m?jsx$/,
+				exclude: /node_modules/,
+				use: {
+					loader: 'babel-loader',
+					options: babelOptions('@babel/preset-react') 	
+				}
+			},
 		]
 	}
 }

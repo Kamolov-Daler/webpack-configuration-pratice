@@ -1,22 +1,38 @@
-/*
- * ATTENTION: The "eval" devtool has been used (maybe by default in mode: "development").
- * This devtool is neither made for production nor for readable output files.
- * It uses "eval()" calls to create a separate source file in the browser devtools.
- * If you are trying to read the output file, select a different devtool (https://webpack.js.org/configuration/devtool/)
- * or disable the default devtool with "devtool: false".
- * If you are looking for production-ready output files, see mode: "production" (https://webpack.js.org/configuration/mode/).
- */
 /******/ (function() { // webpackBootstrap
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({
 
-/***/ "./analytics.js":
+/***/ "./analytics.ts":
 /*!**********************!*\
-  !*** ./analytics.js ***!
+  !*** ./analytics.ts ***!
   \**********************/
 /***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony import */ var jquery__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! jquery */ \"../node_modules/jquery/dist/jquery.js\");\n/* harmony import */ var jquery__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(jquery__WEBPACK_IMPORTED_MODULE_0__);\n\nfunction createAnalytics() {\n  var counter = 0;\n  var destroyed = false;\n  var listener = function listener() {\n    return counter++;\n  };\n  jquery__WEBPACK_IMPORTED_MODULE_0__(document).on('click', listener);\n  return {\n    destroy: function destroy() {\n      jquery__WEBPACK_IMPORTED_MODULE_0__(document).of('click', listener);\n      destroyed = true;\n    },\n    getClicks: function getClicks() {\n      if (destroyed) {\n        return \"Analytics is destroyed. Counter = \".concat(counter);\n      }\n      return counter;\n    }\n  };\n}\nwindow.analytics = createAnalytics();\n\n//# sourceURL=webpack:///./analytics.js?");
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var jquery__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! jquery */ "../node_modules/jquery/dist/jquery.js");
+/* harmony import */ var jquery__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(jquery__WEBPACK_IMPORTED_MODULE_0__);
+
+function createAnalytics() {
+  var counter = 0;
+  var destroyed = false;
+  var listener = function listener() {
+    return counter++;
+  };
+  jquery__WEBPACK_IMPORTED_MODULE_0__(document).on('click', listener);
+  return {
+    destroy: function destroy() {
+      jquery__WEBPACK_IMPORTED_MODULE_0__(document).of('click', listener);
+      destroyed = true;
+    },
+    getClicks: function getClicks() {
+      if (destroyed) {
+        return "Analytics is destroyed. Counter = ".concat(counter);
+      }
+      return counter;
+    }
+  };
+}
+window['analytics'] = createAnalytics();
 
 /***/ })
 
@@ -184,7 +200,7 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony import */ var jque
 /******/ 	// startup
 /******/ 	// Load entry module and return exports
 /******/ 	// This entry module depends on other loaded chunks and execution need to be delayed
-/******/ 	var __webpack_exports__ = __webpack_require__.O(undefined, ["vendors-node_modules_jquery_dist_jquery_js"], function() { return __webpack_require__("./analytics.js"); })
+/******/ 	var __webpack_exports__ = __webpack_require__.O(undefined, ["vendors-node_modules_jquery_dist_jquery_js"], function() { return __webpack_require__("./analytics.ts"); })
 /******/ 	__webpack_exports__ = __webpack_require__.O(__webpack_exports__);
 /******/ 	
 /******/ })()
